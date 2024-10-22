@@ -1,24 +1,17 @@
 $(document).ready(function() {
-/***********
-VARIABLES
-**********/
-    var $body = $('body');
-    var $checkbox = $('#switch');
+    /***********
+     VARIABLES
+     **********/
     var megaMenuItem = $('.mega-menu a')
     var menuHeight = $('.mega-menu').outerHeight();
     var hamburgerMenuHeight = $('.hamburger-menu').outerHeight();
     var hamburgerMenuItem = $('.hamburger-menu a');
-    var birthDate = new Date(1998, 7, 8); // Month is 0-indexed (7 = August)
-    var today = new Date();
-    var years = today.getFullYear() - birthDate.getFullYear();
-    var description = $('.description');
 
+    /***********
+     SCROLL TO TOP
+     **********/
 
-/***********
-SCROLL TO TOP
- **********/
-
-const $myButton = $('#toTop');
+    const $myButton = $('#toTop');
     $(window).on('scroll', function() {
         if ($(this).scrollTop() > 100) {
             $myButton.fadeIn();
@@ -29,25 +22,26 @@ const $myButton = $('#toTop');
     $myButton.on('click', function() {
         $('html, body').scrollTop(0);
     });
-/***********
- THEME TOGGLE
- **********/
-    if ($checkbox.is(':checked')) {
-        $body.removeClass('light-theme').addClass('dark-theme');
-    } else {
-        $body.removeClass('dark-theme').addClass('light-theme');
-    }
 
-    $checkbox.on('change', function() {
-        if ($checkbox.is(':checked')) {
-            $body.removeClass('light-theme').addClass('dark-theme');
-        } else {
-            $body.removeClass('dark-theme').addClass('light-theme');
+    /***********
+     CHANGE FAVICON ON HOVER
+     **********/
+
+    const originalSrc = '/assets/favicon.png';
+    const hoverSrc = '/assets/favicon_alt.png';
+
+    $('.favicon').hover(
+        function() {
+            $(this).attr('src', hoverSrc);
+        },
+        function() {
+            $(this).attr('src', originalSrc);
         }
-    });
-/***********
- MENU BORDER
- **********/
+    );
+
+    /***********
+     MENU BORDER
+     **********/
     $(megaMenuItem).on('click', function() {
 
         $(megaMenuItem).removeClass('active');
@@ -55,10 +49,9 @@ const $myButton = $('#toTop');
         $(this).addClass('active');
 
     });
-
-/***************
- HAMBURGER MENU TOGGLE
-******************/
+    /***************
+     HAMBURGER MENU TOGGLE
+     ******************/
 
     $('.hamburger-toggle').on('click', function() {
         $('.hamburger-menu-container').toggleClass('open');
@@ -67,10 +60,29 @@ const $myButton = $('#toTop');
     hamburgerMenuItem.on('click', function() {
         $('.hamburger-menu-container').removeClass('open');
     });
+    /************
+     WORK EXPERIENCE EXPAND/COLLAPSE
+     *************/
+    $('.accordion-short').on('click', function () {
+        const moreInfo = $(this).next('.accordion-more-info');
+        const icon = $(this).find('i.text-end');
 
-/*********
- MENU SCROLL
- *********/
+        moreInfo.slideToggle(300);
+        moreInfo.toggleClass('expand minimize');
+
+
+        $(this).toggleClass('expand minimize');
+
+        if (icon.hasClass('fa-plus')) {
+            icon.removeClass('fa-plus').addClass('fa-minus');
+            moreInfo.css('display', 'flex');
+        } else {
+            icon.removeClass('fa-minus').addClass('fa-plus');
+        }
+    });
+    /*********
+     MENU SCROLL
+     *********/
 
     function handleMenuClick(menuItem, offsetHeight) {
         $(menuItem).on('click', function(event) {
@@ -78,7 +90,7 @@ const $myButton = $('#toTop');
 
             var target = $(this.getAttribute('href'));
             if (target.length) {
-                var scrollOffset = target.offset().top - offsetHeight - 30;
+                var scrollOffset = target.offset().top - offsetHeight;
                 $('html, body').animate({
                     scrollTop: scrollOffset
                 }, 0);
@@ -86,55 +98,6 @@ const $myButton = $('#toTop');
         });
     }
     handleMenuClick(hamburgerMenuItem, hamburgerMenuHeight);
-    handleMenuClick(megaMenuItem, menuHeight);
-
-/*********
- CALCULATE AGE
- *********/
-
-    var isBeforeBirthday = (today.getMonth() < birthDate.getMonth()) ||
-        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate());
-    if (isBeforeBirthday) {
-        years--;
-    }
-    var lastBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
-    if (isBeforeBirthday) {
-        lastBirthday.setFullYear(today.getFullYear() - 1);
-    }
-    var daysSinceLastBirthday = Math.floor((today - lastBirthday) / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
-    $('.age').text(years + ' years and ' + daysSinceLastBirthday + ' days old');
-
-    /************
-     READ MORE - DESCRIPTION
-     *************/
-    $('.btn-2.read-more').on('click', function() {
-        var description = $(this).prev('.description');
-
-        // Check if the description is expanded
-        if (description.hasClass('expanded')) {
-            description.removeClass('expanded');
-            $(this).text('Read More');
-        } else {
-            description.addClass('expanded');
-            $(this).text('Read Less');
-        }
-    });
-    /************
-     Remove shadow on scroll
-     *************/
-    description.on('scroll', function() {
-        if ($(this).hasClass('expanded')) {
-            $(this).find('.shadow').css('display', 'none');
-        } else {
-            $(this).find('.shadow').css('display', 'block');
-        }
-    });
-    $('.btn-2').on('click', function() {
-        if (!description.hasClass('expanded')) {
-            description.find('.shadow').css('display', 'block');
-            description.animate({ scrollTop: 0 }, 'slow');
-        }
-    });
     /************
      TABS
      *************/
@@ -145,9 +108,11 @@ const $myButton = $('#toTop');
         $('#' + tabID).fadeIn(300);
         $(this).addClass('active');
     });
+
     /*********
      DISPLAY IMAGES DYNAMICALLY
      *********/
+
     const imageContainer = $('#gallery-image-container');
     const totalImages = 68;
 
@@ -169,35 +134,5 @@ const $myButton = $('#toTop');
         imageWrapper.append(figure);
         imageContainer.append(imageWrapper);
     }
-    /*********
-     HIDE FORM AFTER SUBMISSION
-     *********/
-    $('form').on('submit', function(event) {
-        $(this).fadeOut();
-        setTimeout(function() {
-            $('.alert-success').show()
-        }, 2000);
-    })
-    /*********
-     LAST PUSH API
-     *********/
-    var repoOwner = 'marcokleimans';
-    var repoName = 'marcokleimans.github.io';
-
-    $.get(`https://api.github.com/repos/${repoOwner}/${repoName}/events`, function(data) {
-        var lastPushEvent = data.find(event => event.type === 'PushEvent');
-        if (lastPushEvent) {
-            var lastPushTimestamp = lastPushEvent.created_at;
-            var lastPushDate = new Date(lastPushTimestamp);
-            const options = {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-            };
-            var formattedDate = lastPushDate.toLocaleString("en-US", options);
-            $('.last-push').text(formattedDate);
-        }
-    });
 });
 
