@@ -12,7 +12,7 @@ $(document).ready(function() {
      **********/
 
     const $myButton = $('#toTop');
-    $(window).on('scroll', function() {
+    $('body').on('scroll', function() {
         if ($(this).scrollTop() > 100) {
             $myButton.fadeIn();
         } else {
@@ -80,24 +80,6 @@ $(document).ready(function() {
             icon.removeClass('fa-minus').addClass('fa-plus');
         }
     });
-    /*********
-     MENU SCROLL
-     *********/
-
-    function handleMenuClick(menuItem, offsetHeight) {
-        $(menuItem).on('click', function(event) {
-            event.preventDefault();
-
-            var target = $(this.getAttribute('href'));
-            if (target.length) {
-                var scrollOffset = target.offset().top - offsetHeight;
-                $('html, body').animate({
-                    scrollTop: scrollOffset
-                }, 0);
-            }
-        });
-    }
-    handleMenuClick(hamburgerMenuItem, hamburgerMenuHeight);
     /************
      TABS
      *************/
